@@ -6,6 +6,13 @@ import (
 )
 
 func main() {
+	content := pigsty.ReadJsonFile("bootstrap-actions-sample.json")
+	bootstrapActions := pigsty.NewBootstrapActions(content)
+
+	fmt.Printf("You have %v Bootstrap actions", len(bootstrapActions))
+}
+
+func runCluster() {
 	config := &pigsty.RunJobFlowConfig{
 		LogURI:             "s3://metasearch-impressions",
 		ClusterName:        "metasearch-impressions",

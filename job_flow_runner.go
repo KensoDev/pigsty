@@ -17,9 +17,18 @@ type RunJobFlowConfig struct {
 	MasterInstanceType string
 	SlaveInstanceType  string
 	Region             string
+	BootstrapActions   []BootstrapAction
 }
 
-func NewJobFlowRunner(config *RunJobFlowConfig) (jobFlowRunner *JobFlowRunner) {
+func (config *RunJobFlowConfig) SetBootstrapActions(bootstrapActions []BootstrapAction) {
+	config.BootstrapActions = bootstrapActions
+}
+
+func NewJobFlowConfig(config *RunJobFlowConfig) {
+
+}
+
+func (config *RunJobFlowConfig) RunJobFlow() (jobFlowRunner *JobFlowRunner) {
 	runJobFlowInput := &emr.RunJobFlowInput{
 		AMIVersion: aws.String("3.8.0"),
 		Name:       aws.String(config.ClusterName),
@@ -30,6 +39,10 @@ func NewJobFlowRunner(config *RunJobFlowConfig) (jobFlowRunner *JobFlowRunner) {
 			MasterInstanceType: aws.String(config.MasterInstanceType),
 			SlaveInstanceType:  aws.String(config.SlaveInstanceType),
 		},
+	}
+
+	for _, action := range config.BootstrapActions {
+		panic(action)
 	}
 
 	svc := emr.New(&aws.Config{Region: config.Region})

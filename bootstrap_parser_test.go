@@ -15,7 +15,22 @@ func (s *BootstrapParserTestSuite) TestBootstrapStepParser(c *C) {
 	jsonBlob := []byte(`[
         { "Path": "s3://some_bucket_name", "Args": ["1", "2", "3"] }
 	]`)
-	bootstrapActions := NewBootstrapActionsParser(jsonBlob)
+	bootstrapActions := NewBootstrapActions(jsonBlob)
 	c.Assert(len(bootstrapActions), Equals, 1)
 	c.Assert(len(bootstrapActions[0].Args), Equals, 3)
+}
+
+func (s *BootstrapParserTestSuite) TestBootstrapActionWithNoArgs(c *C) {
+	jsonBlob := []byte(`[
+        { "Path": "s3://some_bucket_name" }
+	]`)
+	bootstrapActions := NewBootstrapActions(jsonBlob)
+	c.Assert(len(bootstrapActions), Equals, 1)
+	c.Assert(len(bootstrapActions[0].Args), Equals, 0)
+}
+
+func (s *BootstrapParserTestSuite) TestEmptyArrayIfNoJson(c *C) {
+	jsonBlob := []byte("")
+	bootstrapActions := NewBootstrapActions(jsonBlob)
+	c.Assert(len(bootstrapActions), Equals, 0)
 }

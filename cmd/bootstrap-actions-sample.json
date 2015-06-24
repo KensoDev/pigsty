@@ -1,0 +1,26 @@
+  [
+      {
+          "Args": [
+              "1",
+              "2",
+              "3"
+          ],
+          "Path": "s3://some_bucket_name/some-bootstrap-file-1"
+      },
+      {
+          "Args": [
+              "1",
+              "2",
+              "3"
+          ],
+          "Path": "s3://some_bucket_name/some-bootstrap-file-2"
+      },
+      {
+          "Args": [
+              "1",
+              "2",
+              "3"
+          ],
+          "Path": "s3://some_bucket_name/some-bootstrap-file-3"
+      }
+  ]
