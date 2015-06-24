@@ -16,6 +16,7 @@ type RunJobFlowConfig struct {
 	InstanceCount      int64
 	MasterInstanceType string
 	SlaveInstanceType  string
+	Region             string
 }
 
 func NewJobFlowRunner(config *RunJobFlowConfig) (jobFlowRunner *JobFlowRunner) {
@@ -30,7 +31,8 @@ func NewJobFlowRunner(config *RunJobFlowConfig) (jobFlowRunner *JobFlowRunner) {
 			SlaveInstanceType:  aws.String(config.SlaveInstanceType),
 		},
 	}
-	svc := emr.New(&aws.Config{Region: "us-west-2"})
+
+	svc := emr.New(&aws.Config{Region: config.Region})
 
 	runJobFlowOutput, err := svc.RunJobFlow(runJobFlowInput)
 
