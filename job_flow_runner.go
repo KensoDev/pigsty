@@ -13,7 +13,7 @@ type RunJobFlowConfig struct {
 	LogURI             string
 	ClusterName        string
 	KeyName            string
-	InstanceCount      int64
+	InstanceCount      int
 	MasterInstanceType string
 	SlaveInstanceType  string
 	Region             string
@@ -35,14 +35,22 @@ func (config *RunJobFlowConfig) RunJobFlow() (jobFlowRunner *JobFlowRunner) {
 		LogURI:     aws.String(config.LogURI),
 		Instances: &emr.JobFlowInstancesConfig{
 			EC2KeyName:         aws.String(config.KeyName),
-			InstanceCount:      &config.InstanceCount,
+			InstanceCount:      aws.Long(int64(config.InstanceCount)),
 			MasterInstanceType: aws.String(config.MasterInstanceType),
 			SlaveInstanceType:  aws.String(config.SlaveInstanceType),
 		},
 	}
+	runJobFlowInput.BootstrapActions = []*emr.BootstrapActionConfig{}
 
-	for _, action := range config.BootstrapActions {
-		panic(action)
+	for _, bootstrapAction := range config.BootstrapActions {
+		action := &emr.BootstrapActionConfig{
+			Name: aws.String(bootstrapAction.Name),
+			ScriptBootstrapAction: &emr.ScriptBootstrapActionConfig{
+				Path: aws.String(bootstrapAction.Path),
+				Args: bootstrapAction.Args,
+			},
+		}
+		runJobFlowInput.BootstrapActions = append(runJobFlowInput.BootstrapActions, action)
 	}
 
 	svc := emr.New(&aws.Config{Region: config.Region})

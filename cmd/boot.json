@@ -1,0 +1,3 @@
+[
+  { "Name": "Download Jar", "Path": "s3://metasearch-impressions/bootstrap.sh", "Args": [] }
+]

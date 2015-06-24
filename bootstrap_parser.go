@@ -7,12 +7,9 @@ import (
 )
 
 type BootstrapAction struct {
+	Name string
 	Path string
-	Args []string
-}
-
-func (f *Foo) SetName(name string) {
-	f.name = name
+	Args []*string
 }
 
 func NewBootstrapActions(jsonBlob []byte) (b []BootstrapAction) {
@@ -29,7 +26,7 @@ func ReadJsonFile(filename string) (content []byte) {
 		return []byte("")
 	}
 
-	content, err := ioutil.ReadFile("bootstrap-actions-sample.json")
+	content, err := ioutil.ReadFile(filename)
 
 	if err != nil {
 		panic("Bootstrap config file unreadable")

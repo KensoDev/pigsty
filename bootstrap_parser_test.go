@@ -13,7 +13,7 @@ var _ = Suite(&BootstrapParserTestSuite{})
 
 func (s *BootstrapParserTestSuite) TestBootstrapStepParser(c *C) {
 	jsonBlob := []byte(`[
-        { "Path": "s3://some_bucket_name", "Args": ["1", "2", "3"] }
+        { "Name": "Some Name", "Path": "s3://some_bucket_name", "Args": ["1", "2", "3"] }
 	]`)
 	bootstrapActions := NewBootstrapActions(jsonBlob)
 	c.Assert(len(bootstrapActions), Equals, 1)
@@ -22,7 +22,7 @@ func (s *BootstrapParserTestSuite) TestBootstrapStepParser(c *C) {
 
 func (s *BootstrapParserTestSuite) TestBootstrapActionWithNoArgs(c *C) {
 	jsonBlob := []byte(`[
-        { "Path": "s3://some_bucket_name" }
+        { "Name": "Some Name", "Path": "s3://some_bucket_name" }
 	]`)
 	bootstrapActions := NewBootstrapActions(jsonBlob)
 	c.Assert(len(bootstrapActions), Equals, 1)

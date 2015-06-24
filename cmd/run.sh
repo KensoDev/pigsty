@@ -1,0 +1,1 @@
+go run ./main.go  --log-uri=s3://metasearch/impressions/ --cluster-name=metasearch-impressions-go --key-name=gogobot-production --instance-count=3 --master-instance-type=m3.xlarge --slave-instance-type=m3.xlarge --bootstrap-configuration-file=boot.json --steps-configuration-file=xyz.jzon --region=us-west-2

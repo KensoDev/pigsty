@@ -3,26 +3,42 @@ package main
 import (
 	"fmt"
 	"github.com/kensodev/pigsty"
+	"gopkg.in/alecthomas/kingpin.v2"
+)
+
+var (
+	logURI              = kingpin.Flag("log-uri", "Logs location for pig/hadoop. Usually this will point to an S3 bucket").String()
+	clusterName         = kingpin.Flag("cluster-name", "What should be the cluster name").String()
+	keyName             = kingpin.Flag("key-name", "Which key-pair should the instances use").String()
+	instanceCount       = kingpin.Flag("instance-count", "How many instances should be boot up").Int()
+	masterInstanceType  = kingpin.Flag("master-instance-type", "What should be the instance type for the master").String()
+	slaveInstanceType   = kingpin.Flag("slave-instance-type", "What should be the instance type for the slave").String()
+	bootstrapConfigFile = kingpin.Flag("bootstrap-configuration-file", "Configuration for bootstrap steps file location").String()
+	stepsConfigFile     = kingpin.Flag("steps-configuration-file", "Configuration for steps steps file location").String()
+	region              = kingpin.Flag("region", "EC2 Region").String()
 )
 
 func main() {
-	content := pigsty.ReadJsonFile("bootstrap-actions-sample.json")
+	kingpin.Parse()
+	content := pigsty.ReadJsonFile(*bootstrapConfigFile)
 	bootstrapActions := pigsty.NewBootstrapActions(content)
 
-	fmt.Printf("You have %v Bootstrap actions", len(bootstrapActions))
-}
-
-func runCluster() {
 	config := &pigsty.RunJobFlowConfig{
-		LogURI:             "s3://metasearch-impressions",
-		ClusterName:        "metasearch-impressions",
-		KeyName:            "gogobot-production",
-		InstanceCount:      3,
-		MasterInstanceType: "m3.xlarge",
-		SlaveInstanceType:  "m3.xlarge",
+		LogURI:             *logURI,
+		ClusterName:        *clusterName,
+		KeyName:            *keyName,
+		InstanceCount:      *instanceCount,
+		MasterInstanceType: *masterInstanceType,
+		SlaveInstanceType:  *slaveInstanceType,
+		Region:             *region,
+		BootstrapActions:   bootstrapActions,
 	}
 
-	runner := pigsty.NewJobFlowRunner(config)
+	runCluster(config)
+}
+
+func runCluster(config *pigsty.RunJobFlowConfig) {
+	runner := config.RunJobFlow()
 
 	fmt.Println("Running: " + *runner.JobFlowId)
 }
