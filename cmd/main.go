@@ -20,7 +20,8 @@ var (
 
 func main() {
 	kingpin.Parse()
-	content := pigsty.ReadJsonFile(*bootstrapConfigFile)
+	reader := JsonReader{FileName: *bootstrapConfigFile}
+	content := reader.ReadFile()
 	bootstrapActions := pigsty.NewBootstrapActions(content)
 
 	config := &pigsty.RunJobFlowConfig{

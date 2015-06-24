@@ -3,7 +3,6 @@ package pigsty
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 )
 
 type BootstrapAction struct {
@@ -19,18 +18,4 @@ func NewBootstrapActions(jsonBlob []byte) (b []BootstrapAction) {
 		fmt.Println("error:", err)
 	}
 	return bootstrapActions
-}
-
-func ReadJsonFile(filename string) (content []byte) {
-	if filename == "" {
-		return []byte("")
-	}
-	content, err := ioutil.ReadFile(filename)
-
-	if err != nil {
-		fmt.Println("Bootstrap config file unreadable, defaulting to blank file")
-		content = []byte("")
-	}
-
-	return content
 }
