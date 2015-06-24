@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Pigsty by KensoDev</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Pigsty</h1>
+        <h2>EMR / PIG workflow</h2>
+        <a href="https://github.com/KensoDev/pigsty" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="pigsty---your-analytics-workflow-helper" class="anchor" href="#pigsty---your-analytics-workflow-helper" aria-hidden="true"><span class="octicon octicon-link"></span></a>pigsty - Your analytics workflow helper</h1>
+
+<p>This project is using <a href="http://tom.preston-werner.com/2010/08/23/readme-driven-development.html">Readme Driven Development</a>.</p>
+
+<p>None of the features described here is fully/partialy working, once it is, the README will reflect it. If you have contributions or feedbacks please feel welcome to do so.</p>
+
+<h2>
+<a id="why" class="anchor" href="#why" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why?</h2>
+
+<p>Working at <a href="http://www.gogobot.com">Gogobot</a>, we have multiple tasks running on map-reduce every day.</p>
+
+<p>Those tasks are typically ran on EMR, for 45-120 minutes at a time.</p>
+
+<p>Once a cluster is running, we want to queue up some tasks (steps) to it.</p>
+
+<p>Since we don't want to spend money on idling clusters, we want to kill the cluster at the end.</p>
+
+<p>This of course is covered by logs, monitoring and more.</p>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ol>
+<li>Launch a cluster</li>
+<li>Termination protection (optional)</li>
+<li>Cutom bootstrapping steps configuration</li>
+<li>Custom Steps configuration</li>
+<li>Kill timers</li>
+<li>Logs -&gt; JSON log support for Logstash</li>
+</ol>
+
+<h2>
+<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it works?</h2>
+
+<h3>
+<a id="prerequisites" class="anchor" href="#prerequisites" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prerequisites</h3>
+
+<p>You need to define 2 environment variables for this command to work</p>
+
+<p><code>AWS_SECRET_ACCESS_KEY</code> and <code>AWS_ACCESS_KEY_ID</code>, this should be for a user that <strong>has</strong> acces to creating/terminating EMR clusters.</p>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>The command has multiple configuration options</p>
+
+<h4>
+<a id="command-line-arguments" class="anchor" href="#command-line-arguments" aria-hidden="true"><span class="octicon octicon-link"></span></a>Command line Arguments</h4>
+
+<ol>
+<li>
+<code>log-uri</code>: Where do you want to keep the logs of your steps/cluster run. Default: none</li>
+<li>
+<code>cluster-name</code>: Name of the cluster that will be created. Default: <code>Pigsty</code>
+</li>
+<li>
+<code>key-name</code>: AWS KeyPair that will be assigned to the cluster. Default none</li>
+<li>
+<code>instance-count</code>: How many instances should your cluster include: Default: <code>3</code>
+</li>
+<li>
+<code>master-instance-type</code>: Instance Type for the master node. Default <code>m3.xlarge</code>
+</li>
+<li>
+<code>slave-instance-type</code>: Instance Type for the slave node. Default <code>m3.xlarge</code>
+</li>
+<li>
+<code>bootstrap-actions-file</code>: Location of the bootstrap steps configuration file (See bootstrap steps configuration structure). Default none</li>
+<li>
+<code>steps-configuration-file</code>: Location of the steps configuration file (See Steps json structure). Default non</li>
+<li>
+<code>kill-when-idle</code>: true/false whether to kill the instance(s) when the steps are finished. Default true</li>
+</ol>
+
+<h4>
+<a id="json-steps-cnofiguration-for-bootstrap-actions" class="anchor" href="#json-steps-cnofiguration-for-bootstrap-actions" aria-hidden="true"><span class="octicon octicon-link"></span></a>JSON steps cnofiguration (for bootstrap actions)</h4>
+
+<p>If you want to have bootstrap actions attached to your cluster, the command needs to include a <code>bootstrap-actions-file</code>.<br>
+This is just a simple JSON file that needs to look like this:</p>
+
+<div class="highlight highlight-javascript"><pre>
+  [
+      {
+          <span class="pl-s"><span class="pl-pds">"</span>Args<span class="pl-pds">"</span></span><span class="pl-k">:</span> [
+              <span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>3<span class="pl-pds">"</span></span>
+          ],
+          <span class="pl-s"><span class="pl-pds">"</span>Path<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>s3://some_bucket_name/some-bootstrap-file-1<span class="pl-pds">"</span></span>
+      },
+      {
+          <span class="pl-s"><span class="pl-pds">"</span>Args<span class="pl-pds">"</span></span><span class="pl-k">:</span> [
+              <span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>3<span class="pl-pds">"</span></span>
+          ],
+          <span class="pl-s"><span class="pl-pds">"</span>Path<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>s3://some_bucket_name/some-bootstrap-file-2<span class="pl-pds">"</span></span>
+      },
+      {
+          <span class="pl-s"><span class="pl-pds">"</span>Args<span class="pl-pds">"</span></span><span class="pl-k">:</span> [
+              <span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>3<span class="pl-pds">"</span></span>
+          ],
+          <span class="pl-s"><span class="pl-pds">"</span>Path<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>s3://some_bucket_name/some-bootstrap-file-3<span class="pl-pds">"</span></span>
+      }
+  ]
+</pre></div>
+
+<h4>
+<a id="steps" class="anchor" href="#steps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Steps</h4>
+
+<p>Steps is a similar configuration file like bootstrap steps</p>
+
+<div class="highlight highlight-javascript"><pre>
+  [
+      {
+          <span class="pl-s"><span class="pl-pds">"</span>ActionOnFailure<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>CONTINUE<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>Name<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Name of your Pig Program<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>Type<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>PIG<span class="pl-pds">"</span></span>
+          <span class="pl-s"><span class="pl-pds">"</span>Args<span class="pl-pds">"</span></span><span class="pl-k">:</span> [
+              <span class="pl-s"><span class="pl-pds">"</span>-f<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>s3://your-bucket/script.pig<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>-p<span class="pl-pds">"</span></span>,
+              <span class="pl-s"><span class="pl-pds">"</span>lib_folder=/home/hadoop/pig/lib/<span class="pl-pds">"</span></span>
+          ],
+
+      }
+  ]
+</pre></div>
+
+<h2>
+<a id="contibutors" class="anchor" href="#contibutors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contibutors</h2>
+
+<p><a href="http://twitter.com/kensodev">@kensodev</a> <a href="http://github.com/KensoDev">Github</a>  </p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>See <code>LICENSE</code> file, but you already know the drill with my repos probably :)</p>
+
+<h2>
+<a id="contribute--bug-reports" class="anchor" href="#contribute--bug-reports" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contribute / Bug reports</h2>
+
+<p>Please feel free to open issues, add PRs, documentation, question or anything else.</p>
+
+<p>If you want to contribute please make sure you add tests.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/KensoDev/pigsty/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/KensoDev/pigsty/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/KensoDev/pigsty"></a> is maintained by <a href="https://github.com/KensoDev">KensoDev</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-64459223-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
