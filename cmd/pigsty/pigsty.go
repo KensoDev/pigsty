@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/kensodev/pigsty"
 	"gopkg.in/alecthomas/kingpin.v2"
+	"time"
 )
 
 var (
+	killWhenIdle        = kingpin.Flag("kill-when-idle", "Kill when the cluster is in waiting mode").Bool()
 	logURI              = kingpin.Flag("log-uri", "Logs location for pig/hadoop. Usually this will point to an S3 bucket").String()
 	clusterName         = kingpin.Flag("cluster-name", "What should be the cluster name").String()
 	keyName             = kingpin.Flag("key-name", "Which key-pair should the instances use").String()
@@ -44,6 +46,21 @@ func main() {
 
 func runCluster(config *pigsty.RunJobFlowConfig) {
 	runner := config.RunJobFlow()
-
+	killClusterWhenIdle(config, *runner.JobFlowId)
 	fmt.Println("Running: " + *runner.JobFlowId)
+}
+
+func killClusterWhenIdle(config *pigsty.RunJobFlowConfig, clusterID string) {
+	if *killWhenIdle == true {
+		for {
+			status := config.GetClusterStatus(clusterID)
+
+			if *status == "WAITING" {
+				break
+
+			}
+			fmt.Println("Cluster Status is: %", *status)
+			time.Sleep(10 * time.Second)
+		}
+	}
 }

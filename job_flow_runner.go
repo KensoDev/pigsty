@@ -21,12 +21,16 @@ type RunJobFlowConfig struct {
 	Steps              []Step
 }
 
-func (config *RunJobFlowConfig) SetBootstrapActions(bootstrapActions []BootstrapAction) {
-	config.BootstrapActions = bootstrapActions
-}
-
-func NewJobFlowConfig(config *RunJobFlowConfig) {
-
+func (config *RunJobFlowConfig) GetClusterStatus(clusterID string) *string {
+	svc := emr.New(&aws.Config{Region: config.Region})
+	describeClusterInput := &emr.DescribeClusterInput{
+		ClusterID: aws.String(clusterID),
+	}
+	describeClusterOutput, err := svc.DescribeCluster(describeClusterInput)
+	if err != nil {
+		panic(err)
+	}
+	return describeClusterOutput.Cluster.Status.State
 }
 
 func (config *RunJobFlowConfig) RunJobFlow() (jobFlowRunner *JobFlowRunner) {
