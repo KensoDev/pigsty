@@ -20,9 +20,12 @@ var (
 
 func main() {
 	kingpin.Parse()
-	reader := JsonReader{FileName: *bootstrapConfigFile}
-	content := reader.ReadFile()
-	bootstrapActions := pigsty.NewBootstrapActions(content)
+
+	bootstrapReader := pigsty.JsonReader{FileName: *bootstrapConfigFile}
+	bootstrapActions := pigsty.NewBootstrapActions(bootstrapReader.ReadFile())
+
+	stepsReader := pigsty.JsonReader{FileName: *stepsConfigFile}
+	steps := pigsty.NewStepsParser(stepsReader.ReadFile())
 
 	config := &pigsty.RunJobFlowConfig{
 		LogURI:             *logURI,
@@ -33,6 +36,7 @@ func main() {
 		SlaveInstanceType:  *slaveInstanceType,
 		Region:             *region,
 		BootstrapActions:   bootstrapActions,
+		Steps:              steps,
 	}
 
 	runCluster(config)

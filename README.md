@@ -16,12 +16,12 @@ Since we don't want to spend money on idling clusters, we want to kill the clust
 
 This of course is covered by logs, monitoring and more.
 
-## Features
+## Features (IMPLEMENTED next to features that are already working)
 
-1. Launch a cluster
+1. Launch a cluster (IMPLEMENTED)
 2. Termination protection (optional)
-3. Cutom bootstrapping steps configuration
-4. Custom Steps configuration
+3. Cutom bootstrapping steps configuration (IMPLEMENTED)
+4. Custom Steps configuration (IMPLEMENTED)
 5. Kill timers
 6. Logs -> JSON log support for Logstash
 
@@ -57,54 +57,68 @@ This is just a simple JSON file that needs to look like this:
 ```javascript
 
   [
-      {
-          "Args": [
-              "1",
-              "2",
-              "3"
-          ],
-          "Path": "s3://some_bucket_name/some-bootstrap-file-1"
-      },
-      {
-          "Args": [
-              "1",
-              "2",
-              "3"
-          ],
-          "Path": "s3://some_bucket_name/some-bootstrap-file-2"
-      },
-      {
-          "Args": [
-              "1",
-              "2",
-              "3"
-          ],
-          "Path": "s3://some_bucket_name/some-bootstrap-file-3"
-      }
-  ]
+    {
+		Args: [],
+        "Name": "Install Hue",
+        "Path": "s3://us-west-2.elasticmapreduce/libs/hue/install-hue"
+    },
+    {
+        "Args": [],
+        "Name": "Download mysql-connector jar",
+        "Path": "s3://some-bucket-name/bootstrap.sh"
+    }
+]
+
   
 ```
 
 #### Steps
 
-Steps is a similar configuration file like bootstrap steps
+Steps is a similar configuration file like bootstrap steps.
+
+This is an example for installing some software. Pig, Hive, also running Hue.
 
 ```javascript
 
-  [
-      {
-          "ActionOnFailure": "CONTINUE",
-          "Name": "Name of your Pig Program",
-          "Type": "PIG"
-          "Args": [
-              "-f",
-              "s3://your-bucket/script.pig",
-              "-p",
-              "lib_folder=/home/hadoop/pig/lib/"
-          ],
-  
-      }
-  ]
+[
+  {
+    "Name": "Install Hive",
+    "ActionOnFailure": "TERMINATE_CLUSTER",
+    "MainClass": "None",
+    "Jar": "s3://us-west-2.elasticmapreduce/libs/script-runner/script-runner.jar",
+    "Args": [
+      "s3://us-west-2.elasticmapreduce/libs/hive/hive-script",
+      "--install-hive",
+      "--base-path",
+      "s3://us-west-2.elasticmapreduce/libs/hive",
+      "--hive-versions",
+      "latest"
+    ]
+  },
+  {
+    "Name": "Install Pig",
+    "ActionOnFailure": "TERMINATE_CLUSTER",
+    "MainClass": "None",
+    "Jar": "s3://us-west-2.elasticmapreduce/libs/script-runner/script-runner.jar",
+    "Args": [
+      "s3://us-west-2.elasticmapreduce/libs/pig/pig-script",
+      "--install-pig",
+      "--base-path",
+      "s3://us-west-2.elasticmapreduce/libs/pig",
+      "--pig-versions",
+      "latest"
+    ]
+  },
+  {
+    "Name": "Run Hue",
+    "ActionOnFailure": "TERMINATE_CLUSTER",
+    "MainClass": "None",
+    "Jar": "s3://us-west-2.elasticmapreduce/libs/script-runner/script-runner.jar",
+    "Args": [
+      "s3://us-west-2.elasticmapreduce/libs/hue/run-hue"
+    ]
+  }
+]
   
 ```
 

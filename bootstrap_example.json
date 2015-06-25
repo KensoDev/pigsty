@@ -1,0 +1,3 @@
+[
+  { "Name": "Install Hue", "Path": "s3://us-west-2.elasticmapreduce/libs/hue/install-hue" },
+]

@@ -11,7 +11,7 @@ type BootstrapAction struct {
 	Args []*string
 }
 
-func NewBootstrapActions(jsonBlob []byte) (b []BootstrapAction) {
+func NewBootstrapActions(jsonBlob []byte) (bootstrap []BootstrapAction) {
 	var bootstrapActions []BootstrapAction
 	err := json.Unmarshal(jsonBlob, &bootstrapActions)
 	if err != nil {

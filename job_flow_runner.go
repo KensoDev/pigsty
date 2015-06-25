@@ -18,6 +18,7 @@ type RunJobFlowConfig struct {
 	SlaveInstanceType  string
 	Region             string
 	BootstrapActions   []BootstrapAction
+	Steps              []Step
 }
 
 func (config *RunJobFlowConfig) SetBootstrapActions(bootstrapActions []BootstrapAction) {
@@ -51,6 +52,21 @@ func (config *RunJobFlowConfig) RunJobFlow() (jobFlowRunner *JobFlowRunner) {
 			},
 		}
 		runJobFlowInput.BootstrapActions = append(runJobFlowInput.BootstrapActions, action)
+	}
+
+	runJobFlowInput.Steps = []*emr.StepConfig{}
+
+	for _, step := range config.Steps {
+		stepConfig := &emr.StepConfig{
+			Name:            aws.String(step.Name),
+			ActionOnFailure: aws.String(step.ActionOnFailure),
+			HadoopJARStep: &emr.HadoopJARStepConfig{
+				JAR:       aws.String(step.Jar),
+				MainClass: aws.String(step.MainClass),
+				Args:      step.Args,
+			},
+		}
+		runJobFlowInput.Steps = append(runJobFlowInput.Steps, stepConfig)
 	}
 
 	svc := emr.New(&aws.Config{Region: config.Region})

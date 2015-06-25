@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "Install Hive",
+    "ActionOnFailure": "TERMINATE",
+    "MainClass": "None",
+    "Jar": "s3://us-west-2.elasticmapreduce/libs/script-runner/script-runner.jar",
+    "Args": [
+      "s3://us-west-2.elasticmapreduce/libs/hive/hive-script",
+      "--install-hive",
+      "--base-path",
+      "s3://us-west-2.elasticmapreduce/libs/hive",
+      "--hive-versions latest"
+    ]
+  },
+  {
+    "Name": "Install Pig",
+    "ActionOnFailure": "TERMINATE",
+    "MainClass": "None",
+    "Jar": "s3://us-west-2.elasticmapreduce/libs/script-runner/script-runner.jar",
+    "Args": [
+      "s3://us-west-2.elasticmapreduce/libs/pig/pig-script",
+      "--install-pig",
+      "--base-path",
+      "s3://us-west-2.elasticmapreduce/libs/pig",
+      "--pig-versions latest"
+    ]
+  },
+  {
+    "Name": "Run Hue",
+    "ActionOnFailure": "TERMINATE",
+    "MainClass": "None",
+    "Jar": "s3://us-west-2.elasticmapreduce/libs/script-runner/script-runner.jar",
+    "Args": [
+      "s3://us-west-2.elasticmapreduce/libs/hue/run-hue"
+    ]
+  }
+]
